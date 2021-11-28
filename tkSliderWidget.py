@@ -20,6 +20,8 @@ class Slider(Frame):
         max_val=1,
         init_lis=None,
         show_value=True,
+        removable=False,
+        addable=False,
     ):
         Frame.__init__(self, master, height=height, width=width)
         self.master = master
@@ -51,8 +53,10 @@ class Slider(Frame):
         self.canv.pack()
         self.canv.bind("<Motion>", self._mouseMotion)
         self.canv.bind("<B1-Motion>", self._moveBar)
-        self.canv.bind("<3>", self._removeBar)
-        self.canv.bind("<ButtonRelease-1>", self._addBar)
+        if removable:
+            self.canv.bind("<3>", self._removeBar)
+        if addable:
+            self.canv.bind("<ButtonRelease-1>", self._addBar)
 
         self.__addTrack(
             self.slider_x, self.slider_y, self.canv_W - self.slider_x, self.slider_y

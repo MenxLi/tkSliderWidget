@@ -14,6 +14,10 @@ slider = Slider(
     removable=True,
     addable=True,
 )
+
+# optionally add a callback on value change
+slider.setValueChageCallback(lambda vals: print(vals))
+
 slider.pack()
 root.title("Slider Widget")
 root.mainloop()

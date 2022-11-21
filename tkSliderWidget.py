@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
 
-from typing import TypedDict, List, Union
+from typing import TypedDict, List, Union, Callable
 
 class Bar(TypedDict):
     Ids: List[int]
@@ -50,6 +50,8 @@ class Slider(Frame):
             self.slider_y = self.canv_H * 2 / 5
         self.slider_x = Slider.BAR_RADIUS  # x pos of the slider (left side)
 
+        self._val_change_callback = lambda lis: None
+
         self.bars: List[Bar] = []
         self.selected_idx = None  # current selection bar index
         for value in self.init_lis:
@@ -76,6 +78,9 @@ class Slider(Frame):
     def getValues(self) -> List[float]:
         values = [bar["Value"] for bar in self.bars]
         return sorted(values)
+    
+    def setValueChageCallback(self, callback: Callable[[List[float]], None]):
+        self._val_change_callback = callback
 
     def _mouseMotion(self, event):
         x = event.x
@@ -179,6 +184,7 @@ class Slider(Frame):
         self.bars[idx]["Ids"] = self.__addBar(pos)
         self.bars[idx]["Pos"] = pos
         self.bars[idx]["Value"] = pos * (self.max_val - self.min_val) + self.min_val
+        self._val_change_callback(self.getValues())
 
     def __calcPos(self, x):
         """calculate position from x coordinate"""
@@ -189,14 +195,6 @@ class Slider(Frame):
             return 1
         else:
             return pos
-
-    def __getValue(self, idx):
-        """#######Not used function#####"""
-        bar = self.bars[idx]
-        ids = bar["Ids"]
-        x = self.canv.coords(ids[0])[0] + Slider.BAR_RADIUS
-        pos = self.__calcPos(x)
-        return pos * (self.max_val - self.min_val) + self.min_val
 
     def __checkSelection(self, x, y):
         """

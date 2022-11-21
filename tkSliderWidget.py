@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
 
-
 class Slider(Frame):
     LINE_COLOR = "#476b6b"
     LINE_WIDTH = 3

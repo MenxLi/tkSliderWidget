@@ -1,6 +1,13 @@
 from tkinter import *
 from tkinter.ttk import *
 
+from typing import TypedDict, List, Union
+
+class Bar(TypedDict):
+    Ids: List[int]
+    Pos: float
+    Value: float
+
 class Slider(Frame):
     LINE_COLOR = "#476b6b"
     LINE_WIDTH = 3
@@ -9,6 +16,9 @@ class Slider(Frame):
     BAR_RADIUS = 10
     BAR_RADIUS_INNER = BAR_RADIUS - 5
     DIGIT_PRECISION = ".1f"  # for showing in the canvas
+
+    # relative step size in 0 to 1, set to 0 for no step size restiction
+    STEP_SIZE:float = 0.0
 
     def __init__(
         self,
@@ -40,12 +50,12 @@ class Slider(Frame):
             self.slider_y = self.canv_H * 2 / 5
         self.slider_x = Slider.BAR_RADIUS  # x pos of the slider (left side)
 
-        self.bars = []
+        self.bars: List[Bar] = []
         self.selected_idx = None  # current selection bar index
         for value in self.init_lis:
             pos = (value - min_val) / (max_val - min_val)
             ids = []
-            bar = {"Pos": pos, "Ids": ids, "Value": value}
+            bar: Bar = {"Pos": pos, "Ids": ids, "Value": value}
             self.bars.append(bar)
 
         self.canv = Canvas(self, height=self.canv_H, width=self.canv_W)
@@ -63,7 +73,7 @@ class Slider(Frame):
         for bar in self.bars:
             bar["Ids"] = self.__addBar(bar["Pos"])
 
-    def getValues(self):
+    def getValues(self) -> List[float]:
         values = [bar["Value"] for bar in self.bars]
         return sorted(values)
 
@@ -85,6 +95,10 @@ class Slider(Frame):
             return False
         pos = self.__calcPos(x)
         idx = self.selected_idx
+        if self.STEP_SIZE > 0:
+            curr_pos = self.bars[idx]["Pos"]
+            if abs(curr_pos - pos) < self.STEP_SIZE:
+                return
         self.__moveBar(idx, pos)
 
     def _removeBar(self, event):

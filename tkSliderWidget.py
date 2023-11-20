@@ -114,8 +114,9 @@ class Slider(Frame):
         idx = self.selected_idx
         if self.step_size_frac > 0:
             curr_pos = self.bars[idx]["Pos"]
-            if abs(curr_pos - pos) < self.step_size_frac:
+            if abs(curr_pos - pos) < (self.step_size_frac * 0.75):
                 return
+            pos = round(pos / self.step_size_frac) * self.step_size_frac
         self.__moveBar(idx, pos)
 
     def _removeBar(self, event):

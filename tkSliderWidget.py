@@ -1,13 +1,14 @@
 from tkinter import *
 from tkinter.ttk import *
 
-from typing import TypedDict, List, Union, Callable
+from typing import TypedDict, List, Callable, Optional, Union
 
 class Bar(TypedDict):
     Ids: List[int]
     Pos: float
     Value: float
 
+num_t = Union[int, float]
 class Slider(Frame):
     LINE_COLOR = "#476b6b"
     LINE_WIDTH = 3
@@ -18,20 +19,29 @@ class Slider(Frame):
     DIGIT_PRECISION = ".1f"  # for showing in the canvas
 
     # relative step size in 0 to 1, set to 0 for no step size restiction
+    # may be override by the step_size argument in __init__
     STEP_SIZE:float = 0.0
 
     def __init__(
         self,
         master,
-        width=400,
-        height=80,
-        min_val=0,
-        max_val=1,
-        init_lis=None,
-        show_value=True,
-        removable=False,
-        addable=False,
+        width: int = 400,
+        height: int = 80,
+        min_val: num_t = 0,
+        max_val: num_t = 1,
+        step_size: Optional[float] = None,
+        init_lis: Optional[list[num_t]] = None,
+        show_value = True,
+        removable = False,
+        addable = False,
     ):
+        if step_size == None:
+            # inherit from class variable
+            step_size = self.STEP_SIZE
+        assert step_size >= 0, "step size must be positive"
+        assert step_size <= max_val - min_val, "step size must be smaller than range"
+        assert min_val < max_val, "min value must be smaller than max value"
+
         Frame.__init__(self, master, height=height, width=width)
         self.master = master
         if init_lis == None:
@@ -39,6 +49,8 @@ class Slider(Frame):
         self.init_lis = init_lis
         self.max_val = max_val
         self.min_val = min_val
+        self.step_size_frac = step_size / float(max_val - min_val)  # step size fraction
+
         self.show_value = show_value
         self.H = height
         self.W = width
@@ -100,9 +112,9 @@ class Slider(Frame):
             return False
         pos = self.__calcPos(x)
         idx = self.selected_idx
-        if self.STEP_SIZE > 0:
+        if self.step_size_frac > 0:
             curr_pos = self.bars[idx]["Pos"]
-            if abs(curr_pos - pos) < self.STEP_SIZE:
+            if abs(curr_pos - pos) < self.step_size_frac:
                 return
         self.__moveBar(idx, pos)
 

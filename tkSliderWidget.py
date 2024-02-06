@@ -91,7 +91,7 @@ class Slider(Frame):
         values = [bar["Value"] for bar in self.bars]
         return sorted(values)
     
-    def setValueChageCallback(self, callback: Callable[[List[float]], None]):
+    def setValueChangeCallback(self, callback: Callable[[List[float]], None]):
         self._val_change_callback = callback
 
     def _mouseMotion(self, event):

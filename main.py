@@ -16,7 +16,7 @@ slider = Slider(
 )
 
 # optionally add a callback on value change
-slider.setValueChageCallback(lambda vals: print(vals))
+slider.setValueChangeCallback(lambda vals: print(vals))
 
 slider.pack()
 root.title("Slider Widget")
